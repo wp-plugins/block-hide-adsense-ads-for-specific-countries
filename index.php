@@ -17,7 +17,7 @@ register_deactivation_hook(__FILE__, 'haa_uninstall');
 	define('HAA_COUNTRY_TABLE', $prefix.'haa_country'); 
 	define('HAA_IP_TABLE', $prefix.'haa_ip');
 	define('HAA_IP_TEMP', $prefix.'haa_ip_temp');
-	define("HAA_DIR",plugins_url().'/hide-adsense-ads');
+	define("HAA_DIR",plugins_url().'/block-hide-adsense-ads-for-specific-countries');
 		
 		
 function haa_config(){
@@ -580,7 +580,7 @@ if (!get_option($haa_country_hide_a)){
 
 function haa_ip_csv_import(){
 	global $wpdb;
-	$csv_file = plugins_url()."/hide-adsense-ads/GeoIPCountryCSV/GeoIPCountryWhois.csv";
+	$csv_file = plugins_url()."/block-hide-adsense-ads-for-specific-countries/GeoIPCountryCSV/GeoIPCountryWhois.csv";
 
 		$sql = "DROP TABLE ".HAA_IP_TEMP;
 		$wpdb->query($sql);
