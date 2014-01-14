@@ -9,6 +9,7 @@ Author URI: http://cbnewsplus.com
 */
 
 add_action('init', 'haa_config');
+define( 'HAA_VERSION', '1.3' );
 register_activation_hook(__FILE__, 'haa_install');
 register_deactivation_hook(__FILE__, 'haa_uninstall');
 
@@ -676,7 +677,7 @@ if (get_option('haa_post_hide'.$number)=='Y'){
 	$code = get_option('haa_code_ad'.$number);
 
 	$location_a = array("left_float","right_float","before_content","after_content");
-	if ($location == 'random'){$rand_keys = array_rand($location_a, 1);$location=$location_a[$rand_keys[0]]; }
+	if ($location == 'random'){$rand_keys = array_rand($location_a, 1);$location=$location_a[$rand_keys]; }
 
 
 	switch ($location) {
