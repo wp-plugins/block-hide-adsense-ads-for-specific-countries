@@ -3,13 +3,13 @@
 Plugin Name: Hide Adsense Ads for specific countries
 Plugin URI: http://plugins.cbnewsplus.com
 Description: Hide Adsense Ads for specific countries
-Version: 1.4
+Version: 1.5
 Author: Cilene Bonfim 
 Author URI: http://cbnewsplus.com
 */
 
 add_action('init', 'haa_config');
-define( 'HAA_VERSION', '1.4' );
+define( 'HAA_VERSION', '1.5' );
 register_activation_hook(__FILE__, 'haa_install');
 register_deactivation_hook(__FILE__, 'haa_uninstall');
 
@@ -67,6 +67,11 @@ add_option('haa_post_hide1', '');
 add_option('haa_post_hide2', '');
 add_option('haa_post_hide3', '');
 	
+
+add_option('haa_all_hide1', '');
+add_option('haa_all_hide2', '');
+add_option('haa_all_hide3', '');
+
 	
 }
 
@@ -99,6 +104,9 @@ function haa_uninstall () {
 	delete_option('haa_post_hide2');
 	delete_option('haa_post_hide3');	
 	
+	delete_option('haa_all_hide1');
+	delete_option('haa_all_hide2');
+	delete_option('haa_all_hide3');	
 	
 	
 }
@@ -435,6 +443,7 @@ function hide_setting_configuration ($val=1){
 		$haa_category_hide_a="haa_category_hide".$number;
 		$haa_location_page_a="haa_location_page".$number;
 		$haa_post_hide_a = "haa_post_hide".$number;
+		$haa_all_hide_a = "haa_all_hide".$number;
 		
 		$haa_country_hide = $_POST['haa_country_hide'];
 		update_option($haa_country_hide_a, $haa_country_hide);
@@ -451,6 +460,9 @@ function hide_setting_configuration ($val=1){
 		
 		$haa_post_hide = $_POST['haa_post_hide']; 
 		update_option($haa_post_hide_a, $haa_post_hide);
+
+		$haa_all_hide = $_POST['haa_all_hide']; 
+		update_option($haa_all_hide_a, $haa_all_hide);
 		
 		
 		echo '<div class="updated" id="haa-updated"><p>settings updated.</p></div>';
@@ -473,6 +485,7 @@ if (!get_option($haa_country_hide_a)){
 	}
 	
 	$error_csv="<div class='error' style='padding:6px;'>Please do import csv file to the database (click 'Import CSV',). It may take some time</div>
+
 	<script type='text/javascript'>
 		var $ = jQuery.noConflict();
 		jQuery(document).ready( function($){
@@ -500,6 +513,7 @@ if (!get_option($haa_country_hide_a)){
 			$haa_location_page_a = "haa_location_page".$number;
 			$haa_location_page  = get_option($haa_location_page_a);
 			$haa_post_hide = "haa_post_hide".$number;
+			$haa_all_hide = "haa_all_hide".$number;
 	
 	?>
 	
@@ -507,6 +521,9 @@ if (!get_option($haa_country_hide_a)){
 	<form method="post">
 	<input type="hidden" name = "ssubmit" value="<?php echo $number; ?>">
 	<fieldset class="options">
+	
+	<p>Hide Ad Block <input type="checkbox" name="haa_all_hide" value="Y" <?php if (get_option($haa_all_hide)=='Y'){echo "checked";} ?>></p> 
+
 		<select multiple="multiple" id="country-select" class="ms-container" name="haa_country_hide[]">
 		<?php
 			$query = "SELECT * FROM ".HAA_COUNTRY_TABLE." ORDER BY name ASC";
@@ -521,11 +538,9 @@ if (!get_option($haa_country_hide_a)){
 		
 			?>
 		</select>
+
 		<p>Put Your Google Adsense Code or Any HTML Code Here: </p>
 		<textarea name="haa_code_ad" rows="15" cols="100"><?php echo get_option($haa_code_ad); ?></textarea>	
-
-
-
 		<p>Posts <input type="checkbox" name="haa_post_hide" value="Y" <?php if (get_option($haa_post_hide)=='Y'){echo "checked";} ?>> 
 		Display in : 
 		<select name="haa_location_page" style="width:160px">
@@ -613,12 +628,15 @@ add_shortcode('hide-adsense-block', 'wp_content_adsense_hide');
 
 function  wp_content_adsense_hide($atts){
     global $wpdb;
+	
 	if (!isset($atts['number']) && empty($atts['number'])){ $number = 1; }else{$number =  $atts['number'];}
+	if (get_option('haa_all_hide'.$number)!='Y'){ 
 	$haa_code_ad_a= "haa_code_ad".$number;	
 	//----------- HIDE IP	 ---------------------------------------------------
 	$ip = $_SERVER["REMOTE_ADDR"]; 
 	$ip_count = $wpdb->get_var( "SELECT COUNT(*) FROM ".HAA_IP_TABLE." WHERE number='".$number."' AND begin_ip <= INET_ATON('".$ip."') AND end_ip >= INET_ATON('".$ip."')" );
-	if ($ip_count==0){return  get_option($haa_code_ad_a);}			
+	if ($ip_count==0){return  get_option($haa_code_ad_a);}		
+	}
 }
 
 add_filter('the_content', 'wp_content_adsense_hide_post');
@@ -628,7 +646,9 @@ function  wp_content_adsense_hide_post($content=''){
 	
 //----------- HIDE (ONLY SINGLE POST)	 ---------------------------------------------------
 	if(!is_single()){ return $content; }
-		for ($number=1;$number<=3;$number++){
+
+	for ($number=1;$number<=3;$number++){
+			if (get_option('haa_all_hide'.$number)!='Y'){ 
 			if (get_option('haa_post_hide'.$number)=='Y'){	
 //----------- HIDE CATEGORY	 ---------------------------------------------------
 	$category_hide = trim(strtolower(get_option('haa_category_hide'.$number)));
@@ -642,7 +662,7 @@ function  wp_content_adsense_hide_post($content=''){
 		}
 	}
 //----------- HIDE IP	 ---------------------------------------------------
-	$ip = $_SERVER["REMOTE_ADDR"]; 
+	$ip = $_SERVER["REMOTE_ADDR"];
 	$ip_count = $wpdb->get_var( "SELECT COUNT(*) FROM ".HAA_IP_TABLE." WHERE number='".$number."' AND begin_ip <= INET_ATON('".$ip."') AND end_ip >= INET_ATON('".$ip."')" );
 	if ($ip_count>0){ return $content; }
 
@@ -676,6 +696,10 @@ function  wp_content_adsense_hide_post($content=''){
 	}
 	
 }
+}
+
 return $content;	
+
+
 }
 ?>
