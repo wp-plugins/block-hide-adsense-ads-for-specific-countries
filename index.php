@@ -3,13 +3,13 @@
 Plugin Name: Hide Adsense Ads for specific countries
 Plugin URI: http://plugins.cbnewsplus.com
 Description: Hide Adsense Ads for specific countries
-Version: 1.3
+Version: 1.4
 Author: Cilene Bonfim 
 Author URI: http://cbnewsplus.com
 */
 
 add_action('init', 'haa_config');
-define( 'HAA_VERSION', '1.3' );
+define( 'HAA_VERSION', '1.4' );
 register_activation_hook(__FILE__, 'haa_install');
 register_deactivation_hook(__FILE__, 'haa_uninstall');
 
@@ -562,35 +562,23 @@ if (!get_option($haa_country_hide_a)){
 ?>
 		<p>Do not display ads to this category :  <input type="text" name="haa_category_hide" value="<?php echo get_option('haa_category_hide'.$number); ?>" size="30" maxlength="200"/> (e.g : <?php echo $example_cat; ?>)	</p>
 		<div style="clear:both"><br /></div>
-
-
-
-		
-		
-		
-		
 		<div style="clear:both"><br /></div>
 		<input type="submit" value="SAVE" />
 	</fieldset>
 	</form>
 	</div>
-	
-
 <?php
 }
 
 function haa_ip_csv_import(){
 	global $wpdb;
 	$csv_file = plugins_url()."/block-hide-adsense-ads-for-specific-countries/GeoIPCountryCSV/GeoIPCountryWhois.csv";
-
 		$sql = "DROP TABLE ".HAA_IP_TEMP;
 		$wpdb->query($sql);
-		
 		$sql = "CREATE TABLE ".HAA_IP_TEMP." (col1 TINYINT(1),col2 TINYINT(1),begin_ip int(4) unsigned,end_ip int(4) unsigned,country varchar(2))";
 		$wpdb->query($sql);
 	
-	
-//---- ANOTHER METHOD ---------------------------------------------------------------	
+//----  METHOD 1 ---------------------------------------------------------------	
 	$line=0;$data_p="";
 	if (($handle = fopen($csv_file, "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 150, ",")) !== FALSE) {
@@ -603,27 +591,21 @@ function haa_ip_csv_import(){
 			}
 		}
 	}
-
 	$sql = "INSERT INTO ".HAA_IP_TEMP." (begin_ip,end_ip,country) VALUES ".substr($data_p, 0, strlen($data_p)-1).";";
 	$wpdb->query($sql);	
 //---- ANOTHER METHOD ---------------------------------------------------------------	
-
-	
- // $sql = 'LOAD DATA LOCAL INFILE "'.$csv_file.'" REPLACE INTO TABLE '.HAA_IP_TEMP.' FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY """" '; 
- //	$wpdb->query($sql);
-
-
+//	
+// $sql = 'LOAD DATA LOCAL INFILE "'.$csv_file.'" REPLACE INTO TABLE '.HAA_IP_TEMP.' FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY """" '; 
+// $wpdb->query($sql);
 
 		$sql = "ALTER TABLE ".HAA_IP_TEMP." DROP col1, DROP col2";
 		$wpdb->query($sql);
-		
 		if (get_option('haa_country_hide')){
-		$sql = "TRUNCATE TABLE ".HAA_IP_TABLE;
-		$wpdb->query($sql);
-		$sql ="INSERT INTO ".HAA_IP_TABLE." (begin_ip, end_ip, country) SELECT begin_ip, end_ip, country FROM ".HAA_IP_TEMP." WHERE  ".HAA_IP_TEMP.".country IN ('".implode("','",get_option('haa_country_hide'))."') ";
-		$wpdb->query($sql);
+			$sql = "TRUNCATE TABLE ".HAA_IP_TABLE;
+			$wpdb->query($sql);
+			$sql ="INSERT INTO ".HAA_IP_TABLE." (begin_ip, end_ip, country) SELECT begin_ip, end_ip, country FROM ".HAA_IP_TEMP." WHERE  ".HAA_IP_TEMP.".country IN ('".implode("','",get_option('haa_country_hide'))."') ";
+			$wpdb->query($sql);
 		}
-
 }
 
 
@@ -639,23 +621,15 @@ function  wp_content_adsense_hide($atts){
 	if ($ip_count==0){return  get_option($haa_code_ad_a);}			
 }
 
-
-
-
 add_filter('the_content', 'wp_content_adsense_hide_post');
 
 function  wp_content_adsense_hide_post($content=''){
     global $wpdb;
-
 	
 //----------- HIDE (ONLY SINGLE POST)	 ---------------------------------------------------
 	if(!is_single()){ return $content; }
-
-	
-for ($number=1;$number<=3;$number++){
-if (get_option('haa_post_hide'.$number)=='Y'){	
-	
-	
+		for ($number=1;$number<=3;$number++){
+			if (get_option('haa_post_hide'.$number)=='Y'){	
 //----------- HIDE CATEGORY	 ---------------------------------------------------
 	$category_hide = trim(strtolower(get_option('haa_category_hide'.$number)));
 	$category_hide_array= array();
@@ -668,37 +642,40 @@ if (get_option('haa_post_hide'.$number)=='Y'){
 		}
 	}
 //----------- HIDE IP	 ---------------------------------------------------
-	$ip = $_SERVER["REMOTE_ADDR"]; //$ip = "178.165.20.65";
+	$ip = $_SERVER["REMOTE_ADDR"]; 
 	$ip_count = $wpdb->get_var( "SELECT COUNT(*) FROM ".HAA_IP_TABLE." WHERE number='".$number."' AND begin_ip <= INET_ATON('".$ip."') AND end_ip >= INET_ATON('".$ip."')" );
 	if ($ip_count>0){ return $content; }
 
 //----------- SHOW	 ---------------------------------------------------		
 	$location = get_option('haa_location_page'.$number);
 	$code = get_option('haa_code_ad'.$number);
-
 	$location_a = array("left_float","right_float","before_content","after_content");
 	if ($location == 'random'){$rand_keys = array_rand($location_a, 1);$location=$location_a[$rand_keys]; }
 
-
 	switch ($location) {
 		case 'left_float':
-			return "<div style='float:left;padding:8px 8px 8px 0px;'>" . $code . "</div>" . $content;
+			$content = "<div style='float:left;padding:8px 8px 8px 0px;'>" . $code . "</div>" . $content;
+
 			break;
 		case 'right_float':
-			return "<div style='float:right;padding:8px 0px 8px 8px;'>" . $code . "</div>" . $content;
+			$content = "<div style='float:right;padding:8px 0px 8px 8px;'>" . $code . "</div>" . $content;
+
 			break;
 		case 'before_content':
-			return "<div>" . $code . "</div>" . $content;		
+			$content = "<div>" . $code . "</div>" . $content;		
+
 			break;
 		case 'after_content':
-			return $content . "<div>" . $code . "</div>";		
+			$content = $content . "<div>" . $code . "</div>";		
 			break;
 		default:
-			return $content;
+			$content = $content;
+
 			break;
 	}
 	}
+	
 }
+return $content;	
 }
-
 ?>

@@ -8,8 +8,8 @@ Autor: Cilene Bonfim.
 Donate link: http://www.cbnewsplus.com para receber doações.
 Requires at least: 3.1.0
 Tested up to: 3.8
-Stable tag: 1.3
-Version: 1.3
+Stable tag: 1.4
+Version: 1.4
 
 Integrate Adsense Ads into Wordpress content easily.
 
@@ -60,6 +60,9 @@ Which languages are included when I install the plugin?
 
 == Changelog ==
 
+= 1.4 =
+* Fix small problem
+
 = 1.3 =
 * Add random option
 
@@ -80,5 +83,5 @@ Which languages are included when I install the plugin?
 
 == Upgrade Notice ==
 
-= 1.3 =
-Hide Adsense Ads for specific countries 1.3
+= 1.4 =
+Hide Adsense Ads for specific countries 1.4
