@@ -3,7 +3,7 @@
 Plugin Name: Hide Adsense Ads for specific countries
 Plugin URI: http://plugins.cbnewsplus.com
 Description: Hide Adsense Ads for specific countries
-Version: 1.2
+Version: 1.3
 Author: Cilene Bonfim 
 Author URI: http://cbnewsplus.com
 */
