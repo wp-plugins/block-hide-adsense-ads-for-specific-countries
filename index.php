@@ -495,7 +495,7 @@ if (!get_option($haa_country_hide_a)){
 	$haa_country_hide = get_option($haa_country_hide_a);
 	if (empty($haa_country_hide)){$haa_country_hide=Array();}
 	
-			$haa_location_page_array = array('none'=>'none','left_float'=>'left_float','right_float'=>'right_float','before_content'=>'before_content','after_content'=>'after_content');
+			$haa_location_page_array = array('none'=>'none','random'=>'random', 'left_float'=>'left_float','right_float'=>'right_float','before_content'=>'before_content','after_content'=>'after_content');
 			$haa_location_page_a = "haa_location_page".$number;
 			$haa_location_page  = get_option($haa_location_page_a);
 			$haa_post_hide = "haa_post_hide".$number;
@@ -674,6 +674,10 @@ if (get_option('haa_post_hide'.$number)=='Y'){
 //----------- SHOW	 ---------------------------------------------------		
 	$location = get_option('haa_location_page'.$number);
 	$code = get_option('haa_code_ad'.$number);
+
+	$location_a = array("left_float","right_float","before_content","after_content");
+	if ($location == 'random'){$rand_keys = array_rand($location_a, 1);$location=$location_a[$rand_keys[0]]; }
+
 
 	switch ($location) {
 		case 'left_float':
