@@ -662,9 +662,9 @@ function  wp_content_adsense_hide_post($content=''){
 		}
 	}
 //----------- HIDE IP	 ---------------------------------------------------
-	$ip = $_SERVER["REMOTE_ADDR"];
+	$ip = $_SERVER["REMOTE_ADDR"]; 
 	$ip_count = $wpdb->get_var( "SELECT COUNT(*) FROM ".HAA_IP_TABLE." WHERE number='".$number."' AND begin_ip <= INET_ATON('".$ip."') AND end_ip >= INET_ATON('".$ip."')" );
-	if ($ip_count>0){ return $content; }
+	if ($ip_count==0){ 
 
 //----------- SHOW	 ---------------------------------------------------		
 	$location = get_option('haa_location_page'.$number);
@@ -694,7 +694,7 @@ function  wp_content_adsense_hide_post($content=''){
 			break;
 	}
 	}
-	
+}	
 }
 }
 
