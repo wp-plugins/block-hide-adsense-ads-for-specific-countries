@@ -6,8 +6,8 @@ Tags: para o plugin
 Author URI: http://www.cbnewsplus.com/
 Autor: Cilene Bonfim.
 Donate link: http://www.cbnewsplus.com para receber doações.
-Requires at least: 3.1.0
-Tested up to: 3.8
+Requires at least: 3.9
+Tested up to: 4.1.1
 Stable tag: 1.5
 Version: 1.5
 
